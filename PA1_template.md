@@ -1,10 +1,5 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-author: Amine BENHAMZA
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
+Amine BENHAMZA  
 
 ### Librairies to install
 Before going further, please ensure that you installed the following librairies:
@@ -14,7 +9,8 @@ Before going further, please ensure that you installed the following librairies:
 
 ### Loading and preprocessing the data
 Unzip the compressed file and apply the specific function `read.csv`
-```{r}
+
+```r
 activity <- read.csv("activity.csv")
 ```
 
@@ -23,7 +19,8 @@ activity <- read.csv("activity.csv")
 
 Prepare data in order to generate histogram and to answer the question
 
-```{r}
+
+```r
 suppressMessages(suppressWarnings(library(dplyr)))
 
 #Build dateframe total of steps
@@ -37,7 +34,8 @@ act_total$date <- as.Date(act_total$date)
 
 Histogram of total steps per day
 
-```{r}
+
+```r
 suppressMessages(suppressWarnings(library(ggplot2)))
 
 #Plot Data Frames
@@ -46,19 +44,32 @@ m <- m + geom_histogram(stat="identity")
 m
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
 Median of the total number of steps taken per day
-```{r}
+
+```r
 median(act_total$total,na.rm=TRUE)
 ```
 
+```
+## [1] 10395
+```
+
 Mean of the total number of steps taken per day
-```{r}
+
+```r
 mean(act_total$total,na.rm=TRUE)
+```
+
+```
+## [1] 9354.23
 ```
 
 ### What is the average daily activity pattern?
 Prepare data in order to plot the time series and to answer the question
-```{r}
+
+```r
 #Build dateframe
 act_avg <- activity %>%  
            group_by(interval) %>% 
@@ -66,34 +77,49 @@ act_avg <- activity %>%
 ```
 
 Plot the time series
-```{r}
+
+```r
 #Plot Data Frames
 m <- ggplot(act_avg, aes(x=interval,y=avg))
 m <- m + geom_line()
 m
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+
 The 5-minute interval that contains on average the maximum number of steps
-```{r}
+
+```r
 head(arrange(act_avg,desc(avg)),1)$interval
+```
+
+```
+## [1] 835
 ```
 
 ### Imputing missing values
 
 Count of incomplete cases
-```{r}
+
+```r
 sum(!complete.cases(activity$steps)) 
 ```
 
+```
+## [1] 2304
+```
+
 Missing values will be filled with the average of averages per 5-minutes interval
-```{r}
+
+```r
 index <- !complete.cases(activity$steps)
 
 activity_2 <- activity
 
 activity_2[index,]$steps <- mean(act_avg$avg)
 ```
-```{r}
+
+```r
 act_total_2 <- activity_2 %>%  
                group_by(date) %>% 
                summarise(total = sum(steps,na.rm=TRUE))
@@ -104,22 +130,34 @@ act_total_2$date <- as.Date(act_total_2$date)
 
 Histogram of total steps per day
 
-```{r}
 
+```r
 #Plot Data Frames
 m <- ggplot(act_total_2, aes(x=date,y=total))
 m <- m + geom_histogram(stat="identity")
 m
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
+
 Median of the total number of steps taken per day
-```{r}
+
+```r
 median(act_total_2$total,na.rm=TRUE)
 ```
 
+```
+## [1] 10766.19
+```
+
 Mean of the total number of steps taken per day
-```{r}
+
+```r
 mean(act_total_2$total,na.rm=TRUE)
+```
+
+```
+## [1] 10766.19
 ```
 
 One can notice a drop in the mean and median, and because of the devised strategy for filling values, mean and median are equal.
